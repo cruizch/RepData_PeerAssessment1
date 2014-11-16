@@ -1,25 +1,256 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Activity Monitoring"
+author: "Carlos Ruiz"
+date: "Friday, November 14, 2014"
+output: html_document
 ---
 
+Load the ggplot2 library
 
-## Loading and preprocessing the data
+```{r}
+library("ggplot2")
+```
 
+Set locale to avoid different month and weekday names
 
+```{r}
+Sys.setlocale("LC_TIME", "English")
+```
 
-## What is mean total number of steps taken per day?
+##Loading and preprocessing the data
 
+###Loading data
 
+Read the **activity.csv** file with the activity data. We assume that the file resides in the current working directory. The default parameters are just fine
 
-## What is the average daily activity pattern?
+```{r}
+activity.data <- read.csv("activity.csv")
+```
 
+###Transform data
 
+We need to transform the **date** column to **Date** type
 
-## Imputing missing values
+```{r}
+activity.data[, "date"] <- as.Date(activity.data[, "date"], format = "%Y-%m-%d")
+```
 
+##Questions
 
+###Mean total number of steps taken per day
 
-## Are there differences in activity patterns between weekdays and weekends?
+Total number of steps taken each day
+
+```{r}
+# group by date and report the sum of steps taken per day
+sum.steps.by.date <- aggregate(steps ~ date, data = activity.data, sum)
+
+# plot the sum
+with (sum.steps.by.date, {
+    qplot(
+       date, 
+       steps,
+       main = "Sum of steps taken per day",
+       xlab = "Date", 
+       ylab = "Steps",
+       geom = "line"
+    )
+})
+
+# print the aggregated data
+sum.steps.by.date
+```
+
+Mean and median of the total number of steps taken per day
+
+```{r}
+# group by date and report the mean of steps taken per day
+mean.steps.by.date <- aggregate(steps ~ date, data = activity.data, mean)
+
+# plot the mean
+with (mean.steps.by.date, {
+    qplot(
+        date, 
+        steps, 
+        main = "Mean of steps taken per day",
+        xlab = "Date", 
+        ylab = "Steps", 
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+mean.steps.by.date
+
+# group by date and report the median of steps taken per day
+median.steps.by.date <- aggregate(steps ~ date, data = activity.data, median)
+
+# plot the median
+with (median.steps.by.date, {
+    qplot(
+        date, 
+        steps, 
+        main = "Median of steps taken per day", 
+        xlab = "Date", 
+        ylab = "Steps",
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+median.steps.by.date
+```
+
+###Average daily activity pattern
+
+Time series plot of the 5-minute interval and the average number of steps taken 
+averaged across all days
+
+```{r}
+# group by interval and report the mean of steps taken per day
+mean.steps.by.interval <- aggregate(steps ~ interval, data = activity.data, mean)
+
+# plot the mean
+with (mean.steps.by.interval, {
+    qplot(
+        interval, 
+        steps, 
+        main = "Mean of steps taken per 5-minute interval",
+        xlab = "5-minute interval",
+        ylab = "Steps",
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+mean.steps.by.interval
+```
+
+The following 5-minute interval on average accross all the days in the dataset contains the maximum number of steps
+
+```{r}
+mean.steps.by.interval[mean.steps.by.interval[, "steps"] == max(mean.steps.by.interval[, "steps"]), ]
+```
+
+###Imputing missing values
+
+Total number of missing values in the dataset
+
+```{r}
+sum(is.na(activity.data[, "steps"]))
+```
+
+The **strategy** choosen to fill the NA steps values will be the **mean of each 5-minute interval**
+
+```{r}
+# merge by 5-minute interval to be able to replace the NA values with the mean
+filled.activity.data <- merge(
+    activity.data, 
+    mean.steps.by.interval, 
+    by.x = "interval", 
+    by.y = "interval"
+)
+
+# assign the means of each 5-minute interval where steps value are NA
+filled.activity.data[is.na(filled.activity.data[, "steps.x"]), "steps.x"] <- 
+    filled.activity.data[is.na(filled.activity.data[, "steps.x"]), "steps.y"]
+```
+
+Total number of steps taken each day when filling NA values
+
+```{r}
+# group by date and report the sum of steps taken per day
+sum.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, sum)
+
+# plot the sum
+with (sum.steps.by.date, {
+    qplot(
+        date, 
+        steps.x, 
+        main = "Sum of steps taken per day with filled NA values",
+        xlab = "Date", 
+        ylab = "Steps",
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+sum.steps.by.date
+```
+
+Mean and median of the total number of steps taken per day when filling NA values
+
+```{r}
+# group by date and report the mean of steps taken per day
+mean.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, mean)
+
+# plot the mean
+with (mean.steps.by.date, {
+    qplot(
+        date, 
+        steps.x, 
+        main = "Mean of steps taken per day with filled NA values",
+        xlab = "Date",
+        ylab = "Steps",
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+mean.steps.by.date
+
+# group by date and report the median of steps taken per day
+median.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, median)
+
+# plot the median
+with (median.steps.by.date, {
+    qplot(
+        date, 
+        steps.x, 
+        main = "Median of steps taken per day with filled NA values", 
+        xlab = "Date", 
+        ylab = "Steps", 
+        geom = "line"
+    )
+})
+
+# print the aggregated data
+median.steps.by.date
+```
+
+There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the step values were NA. Also, some of the means has changed and now some medians are not zero
+
+###Differences in activity patterns between weekdays and weekends
+
+```{r}
+# get the weekday from date column
+filled.activity.data[, "day"] <- weekdays(filled.activity.data[, "date"], TRUE)
+
+# assign weekends
+filled.activity.data[filled.activity.data[, "day"] %in% c("Sat", "Sun"), "day"] <- "weekend"
+
+# assign weekdays
+filled.activity.data[filled.activity.data[, "day"] != "weekend", "day"] <- "weekday"
+
+# group by interval and day
+mean.steps.by.interval <- aggregate(steps.x ~ interval + day, data = filled.activity.data, mean)
+
+# plot the mean
+with (mean.steps.by.interval, {
+    qplot(
+        interval, 
+        steps.x, 
+        facet = day, 
+        main = "Differences in activity patterns between weekdays and weekends", 
+        xlab = "5-minute interval", 
+        ylab = "Mean of steps", 
+        geom = "line", 
+        color = day
+    )
+})
+
+# print the aggregated data
+mean.steps.by.interval
+```
+
+There are some differences in several 5-minute interval but from different day. I choose to plot both the weekdays and the weekends to be able to compare easily
