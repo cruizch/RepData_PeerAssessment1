@@ -61,18 +61,32 @@ with (sum.steps.by.date, {
 sum.steps.by.date
 ```
 
+The following is the mean of the total number of steps
+
+```{r}
+mean.steps <- mean(sum.steps.by.date$steps)
+mean.steps
+```
+
+The following is the median of the total number of steps
+
+```{r}
+median.steps <- median(sum.steps.by.date$steps)
+median.steps
+```
+
 Mean and median of the total number of steps taken per day
 
 ```{r}
 # group by date and report the mean of steps taken per day
-mean.steps.by.date <- aggregate(steps ~ date, data = activity.data, mean)
+mean.steps.by.date <- aggregate(steps ~ date, data = sum.steps.by.date, mean)
 
 # plot the mean
 with (mean.steps.by.date, {
     qplot(
         date, 
         steps, 
-        main = "Mean of steps taken per day",
+        main = "Mean of total steps taken per day",
         xlab = "Date", 
         ylab = "Steps", 
         geom = "line"
@@ -83,14 +97,14 @@ with (mean.steps.by.date, {
 mean.steps.by.date
 
 # group by date and report the median of steps taken per day
-median.steps.by.date <- aggregate(steps ~ date, data = activity.data, median)
+median.steps.by.date <- aggregate(steps ~ date, data = sum.steps.by.date, median)
 
 # plot the median
 with (median.steps.by.date, {
     qplot(
         date, 
         steps, 
-        main = "Median of steps taken per day", 
+        main = "Median of total steps taken per day", 
         xlab = "Date", 
         ylab = "Steps",
         geom = "line"
@@ -140,7 +154,7 @@ Total number of missing values in the dataset
 sum(is.na(activity.data[, "steps"]))
 ```
 
-The **strategy** choosen to fill the NA steps values will be the **mean of each 5-minute interval**
+The **strategy** choosen to fill the NA steps values will be the **mean of each 5-minute interval** for the same 5-minute interval
 
 ```{r}
 # merge by 5-minute interval to be able to replace the NA values with the mean
@@ -160,10 +174,10 @@ Total number of steps taken each day when filling NA values
 
 ```{r}
 # group by date and report the sum of steps taken per day
-sum.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, sum)
+filled.sum.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, sum)
 
 # plot the sum
-with (sum.steps.by.date, {
+with (filled.sum.steps.by.date, {
     qplot(
         date, 
         steps.x, 
@@ -175,21 +189,35 @@ with (sum.steps.by.date, {
 })
 
 # print the aggregated data
-sum.steps.by.date
+filled.sum.steps.by.date
+```
+
+The following is the mean of the total number of steps when filling NA values
+
+```{r}
+filled.mean.steps <- mean(filled.sum.steps.by.date$steps)
+filled.mean.steps
+```
+
+The following is the median of the total number of steps when filling NA values
+
+```{r}
+filled.median.steps <- median(filled.sum.steps.by.date$steps)
+filled.median.steps
 ```
 
 Mean and median of the total number of steps taken per day when filling NA values
 
 ```{r}
 # group by date and report the mean of steps taken per day
-mean.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, mean)
+filled.mean.steps.by.date <- aggregate(steps.x ~ date, data = filled.sum.steps.by.date, mean)
 
 # plot the mean
-with (mean.steps.by.date, {
+with (filled.mean.steps.by.date, {
     qplot(
         date, 
         steps.x, 
-        main = "Mean of steps taken per day with filled NA values",
+        main = "Mean of total steps taken per day with filled NA values",
         xlab = "Date",
         ylab = "Steps",
         geom = "line"
@@ -197,17 +225,17 @@ with (mean.steps.by.date, {
 })
 
 # print the aggregated data
-mean.steps.by.date
+filled.mean.steps.by.date
 
 # group by date and report the median of steps taken per day
-median.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, median)
+filled.median.steps.by.date <- aggregate(steps.x ~ date, data = filled.sum.steps.by.date, median)
 
 # plot the median
-with (median.steps.by.date, {
+with (filled.median.steps.by.date, {
     qplot(
         date, 
         steps.x, 
-        main = "Median of steps taken per day with filled NA values", 
+        main = "Median of total steps taken per day with filled NA values", 
         xlab = "Date", 
         ylab = "Steps", 
         geom = "line"
@@ -215,10 +243,22 @@ with (median.steps.by.date, {
 })
 
 # print the aggregated data
-median.steps.by.date
+filled.median.steps.by.date
 ```
 
-There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the step values were NA. Also, some of the means has changed and now some medians are not zero
+There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the steps values were NA.
+
+Comparing the original mean and median against the mean and median with filled NA values
+
+```{r}
+cat(mean.steps, filled.mean.steps)
+```
+
+```{r}
+cat(median.steps, filled.median.steps)
+```
+
+There is a slightly difference between the medians. When filling the NA values with the mean of the same 5-second interval, the mean and the median are the same
 
 ###Differences in activity patterns between weekdays and weekends
 
@@ -233,10 +273,10 @@ filled.activity.data[filled.activity.data[, "day"] %in% c("Sat", "Sun"), "day"] 
 filled.activity.data[filled.activity.data[, "day"] != "weekend", "day"] <- "weekday"
 
 # group by interval and day
-mean.steps.by.interval <- aggregate(steps.x ~ interval + day, data = filled.activity.data, mean)
+filled.mean.steps.by.interval <- aggregate(steps.x ~ interval + day, data = filled.activity.data, mean)
 
 # plot the mean
-with (mean.steps.by.interval, {
+with (filled.mean.steps.by.interval, {
     qplot(
         interval, 
         steps.x, 
@@ -250,7 +290,7 @@ with (mean.steps.by.interval, {
 })
 
 # print the aggregated data
-mean.steps.by.interval
+filled.mean.steps.by.interval
 ```
 
-There are some differences in several 5-minute interval but from different day. I choose to plot both the weekdays and the weekends to be able to compare easily
+There are some differences in several 5-minute intervals when the day are a weekend day. I decided to plot both the weekdays and the weekends in the same plot to be able to compare easily
