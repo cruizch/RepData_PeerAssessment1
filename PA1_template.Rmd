@@ -41,7 +41,7 @@ activity.data[, "date"] <- as.Date(activity.data[, "date"], format = "%Y-%m-%d")
 
 Total number of steps taken each day
 
-```{r}
+```{r, fig.width=10}
 # group by date and report the sum of steps taken per day
 sum.steps.by.date <- aggregate(steps ~ date, data = activity.data, sum)
 
@@ -77,7 +77,7 @@ median.steps
 
 Mean and median of the total number of steps taken per day
 
-```{r}
+```{r, fig.width=10}
 # group by date and report the mean of steps taken per day
 mean.steps.by.date <- aggregate(steps ~ date, data = sum.steps.by.date, mean)
 
@@ -120,7 +120,7 @@ median.steps.by.date
 Time series plot of the 5-minute interval and the average number of steps taken 
 averaged across all days
 
-```{r}
+```{r, fig.width=10}
 # group by interval and report the mean of steps taken per day
 mean.steps.by.interval <- aggregate(steps ~ interval, data = activity.data, mean)
 
@@ -172,7 +172,7 @@ filled.activity.data[is.na(filled.activity.data[, "steps.x"]), "steps.x"] <-
 
 Total number of steps taken each day when filling NA values
 
-```{r}
+```{r, fig.width=10}
 # group by date and report the sum of steps taken per day
 filled.sum.steps.by.date <- aggregate(steps.x ~ date, data = filled.activity.data, sum)
 
@@ -208,7 +208,7 @@ filled.median.steps
 
 Mean and median of the total number of steps taken per day when filling NA values
 
-```{r}
+```{r, fig.width=10}
 # group by date and report the mean of steps taken per day
 filled.mean.steps.by.date <- aggregate(steps.x ~ date, data = filled.sum.steps.by.date, mean)
 
@@ -262,7 +262,7 @@ There is a slightly difference between the medians. When filling the NA values w
 
 ###Differences in activity patterns between weekdays and weekends
 
-```{r}
+```{r, fig.width=10 }
 # get the weekday from date column
 filled.activity.data[, "day"] <- weekdays(filled.activity.data[, "date"], TRUE)
 
