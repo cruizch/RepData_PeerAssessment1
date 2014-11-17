@@ -882,13 +882,13 @@ filled.median.steps.by.date</code></pre>
 ## 59 2012-11-28 10183.00
 ## 60 2012-11-29  7047.00
 ## 61 2012-11-30 10766.19</code></pre>
-<p>There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the steps values were NA.</p>
+<p>There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the steps values were NA</p>
 <p>Comparing the original mean and median against the mean and median with filled NA values</p>
 <pre class="r"><code>cat(mean.steps, filled.mean.steps)</code></pre>
 <pre><code>## 10766.19 10766.19</code></pre>
 <pre class="r"><code>cat(median.steps, filled.median.steps)</code></pre>
 <pre><code>## 10765 10766.19</code></pre>
-<p>There is a slightly difference between the medians. When filling the NA values with the mean of the same 5-second interval, the mean and the median are the same</p>
+<p>There is a slightly difference between the medians. When filling the NA values with the mean of the same 5-second interval, the mean and the median are the same (symmetric distribution)</p>
 </div>
 <div id="differences-in-activity-patterns-between-weekdays-and-weekends" class="section level3">
 <h3>Differences in activity patterns between weekdays and weekends</h3>

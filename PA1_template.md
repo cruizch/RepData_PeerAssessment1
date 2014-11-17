@@ -981,7 +981,7 @@ filled.median.steps.by.date
 ## 61 2012-11-30 10766.19
 ```
 
-There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the steps values were NA.
+There are differences from the estimates when ignoring NA values. For example, the first day (2010-10-01) was not plotted because all the steps values were NA
 
 Comparing the original mean and median against the mean and median with filled NA values
 
@@ -1003,7 +1003,7 @@ cat(median.steps, filled.median.steps)
 ## 10765 10766.19
 ```
 
-There is a slightly difference between the medians. When filling the NA values with the mean of the same 5-second interval, the mean and the median are the same
+There is a slightly difference between the medians. When filling the NA values with the mean of the same 5-second interval, the mean and the median are the same (symmetric distribution)
 
 ###Differences in activity patterns between weekdays and weekends
 
